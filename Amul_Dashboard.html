@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AMUL AI Impact Financial Dashboard</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    padding:20px;
+    background-color: #f5f7fa;
+    color: #222;
+  }
+  h1 { text-align: center; color: #154360; }
+  .container {
+    max-width: 900px;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  .slider-group {
+    margin: 15px 0;
+  }
+  label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 6px;
+  }
+  input[type="range"] {
+    width: 100%;
+  }
+  .value {
+    color: #2874a6;
+    font-weight: bold;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top:20px;
+  }
+  th, td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: center;
+  }
+  th {
+    background-color: #2874a6;
+    color: white;
+  }
+  .footer {
+    margin-top: 15px;
+    font-size: 0.9em;
+    color: gray;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>AMUL AI Impact Financial Dashboard</h1>
+    <div class="slider-group">
+      <label for="revenueGrowth">Revenue Growth from Customer Retention (%)</label>
+      <input type="range" min="0" max="10" value="5" step="0.1" id="revenueGrowth" />
+      <div>Current Value: <span class="value" id="revenueGrowthVal">5.0</span>%</div>
+    </div>
+    <div class="slider-group">
+      <label for="pricingPremium">Price Premium from Sustainable Packaging (%)</label>
+      <input type="range" min="0" max="3" value="1.5" step="0.1" id="pricingPremium" />
+      <div>Current Value: <span class="value" id="pricingPremiumVal">1.5</span>%</div>
+    </div>
+    <div class="slider-group">
+      <label for="profitMarginIncrease">Profit Margin Increase from Portfolio Optimization (%)</label>
+      <input type="range" min="0" max="15" value="10" step="0.1" id="profitMarginIncrease" />
+      <div>Current Value: <span class="value" id="profitMarginIncreaseVal">10.0</span>%</div>
+    </div>
+    <div class="slider-group">
+      <label for="costSavings">Operating Cost Savings (%)</label>
+      <input type="range" min="0" max="10" value="5" step="0.1" id="costSavings" />
+      <div>Current Value: <span class="value" id="costSavingsVal">5.0</span>%</div>
+    </div>
+    <button onclick="updateTable()">Update Projections</button>
+    <table>
+      <thead>
+        <tr>
+          <th>Year</th>
+          <th>Base Revenue (INR Cr)</th>
+          <th>Projected Revenue (INR Cr)</th>
+          <th>Base Profit Margin (%)</th>
+          <th>Projected Profit Margin (%)</th>
+          <th>Projected Profit (INR Cr)</th>
+        </tr>
+      </thead>
+      <tbody id="projectionTable">
+      </tbody>
+    </table>
+    <div class="footer">
+      Data source references: AMUL Annual Reports, Industry Analysis, Market Research.<br/>
+      AI-driven assumptions based on credible sector benchmarks.
+    </div>
+  </div>
+
+<script>
+  const baseRevenue = {
+    2024: 59000,
+    2025: 62000,
+    2026: 65000,
+    2027: 68000,
+    2028: 70000,
+  };
+  const baseProfitMargin = 12; // %
+
+  function formatNumber(num) {
+    return num.toLocaleString('en-IN', {maximumFractionDigits: 0});
+  }
+
+  function updateTable() {
+    // Get slider values
+    const revenueGrowth = parseFloat(document.getElementById('revenueGrowth').value);
+    const pricingPremium = parseFloat(document.getElementById('pricingPremium').value);
+    const profitMarginIncrease = parseFloat(document.getElementById('profitMarginIncrease').value);
+    const costSavings = parseFloat(document.getElementById('costSavings').value);
+
+    // Update slider display values
+    document.getElementById('revenueGrowthVal').textContent = revenueGrowth.toFixed(1);
+    document.getElementById('pricingPremiumVal').textContent = pricingPremium.toFixed(1);
+    document.getElementById('profitMarginIncreaseVal').textContent = profitMarginIncrease.toFixed(1);
+    document.getElementById('costSavingsVal').textContent = costSavings.toFixed(1);
+
+    const tbody = document.getElementById('projectionTable');
+    tbody.innerHTML = '';
+
+    for (const year in baseRevenue) {
+      const baseRev = baseRevenue[year];
+      // Calculate projected revenue: base revenue * (1 + retention growth + price premium)
+      const projectedRevenue = baseRev * (1 + (revenueGrowth + pricingPremium)/100);
+
+      // Calculate projected profit margin = base + portfolio optimization + cost savings
+      const projectedProfitMargin = Math.min(35, baseProfitMargin + profitMarginIncrease + costSavings);
+
+      // Profit = Projected revenue * Projected margin%
+      const projectedProfit = projectedRevenue * projectedProfitMargin/100;
+
+      const row = `<tr>
+        <td>${year}</td>
+        <td>${formatNumber(baseRev)}</td>
+        <td>${formatNumber(projectedRevenue)}</td>
+        <td>${baseProfitMargin.toFixed(1)}</td>
+        <td>${projectedProfitMargin.toFixed(1)}</td>
+        <td>${formatNumber(projectedProfit)}</td>
+      </tr>`;
+      tbody.insertAdjacentHTML('beforeend', row);
+    }
+  }
+
+  // Initial table render
+  updateTable();
+</script>
+
+</body>
+</html>
